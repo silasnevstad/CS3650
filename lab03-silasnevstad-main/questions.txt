@@ -1,0 +1,62 @@
+============
+Experiment 1
+============
+Guess: How many bytes are added to the stack?
+64 bits per push statement = 8 bytes per push statement * 3 push statements
+24 bytes are added to the stack
+
+Guess: What is in %rax? [print $rax]
+$3
+
+Guess: What is on the top of the stack now, i.e., (%rsp)? [x $rsp]
+$2
+
+Guess: What is the item right below the top of the stack, i.e., 8(%rsp) [x $rsp+8]
+$1
+
+Guess: What is in %rbx? [print $rbx]
+$2
+
+
+============
+Experiment 2
+============
+
+Guess: What are the addresses of label in the .data section? [i var stuff]
+there are three data variables, one's labelled start_of_data, that contains nothing, the next is labelled stuff, which contains a .quad word, and finally one labelled end_of_data.
+
+Guess: Contents of address pointed to by `stuff` [p (long) stuff]
+stuff compiles to 08, 07, 06, 05, 04, 03, 02, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00
+the adress stuff points to a quad word, .quad 1, 2, 3, 4, 5, 6, 7, 8
+
+Guess: What's the 5th element of `stuff`? [p $rax + (4*8)]
+04 or 5 (if there is no 0th element, otherwise - 1)
+
+Guess: How big is stuff? [p (long[8]) stuff]
+64 bits = 8 bytes 
+
+
+============
+Experiment 3
+============
+
+Guess: What is on top of the stack? Here, compare with the value printed by `p $after_dummy` [x $rsp]
+the address dummy1 is at the top of the stack, because it was just used in a call statement, which immediattely pushes the address of it's instruction
+
+Guess: What is the address of the top of the stack, relaive to the first showq in `main`? [p $rsp]
+dummy1
+
+Guess: What is the current stack pointer? [p $rsp]
+if after_dummy1 was just called then, it will have pushed it's address to the top of the stack which is the stack pointer
+
+
+============
+Experiment 4
+============
+
+Guess: What is the state of rbp/rsp after stack frame is set up?
+rbp saves the previous stack pushing its top to the bottom of the previous stack, then rsp sets the botton of the current strack at the top position in the previous stack using rbp. Finally a number of bytes are assigned for the current stack (for local variables), depending on how many bytes were allocated. 
+
+Guess: What is the state of rbp/rsp after the stack frame is destroyed?
+Similar to the previous gues statement the previous stack will get reset/destroyed. This happens by rbp, the top of the stack, getting reset/moved to rsp, the bottom of the stack, which removes the items in the stack, then rbp gets popped from the stack, leaving the previous stack behind. 
+

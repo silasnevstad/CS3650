@@ -1,0 +1,16 @@
+a.out  ExternalResources  hello.c  images  output.txt  README.md
+
+   PID TTY          TIME CMD
+ 59172 pts/67   00:00:00 bash
+ 59460 pts/67   00:00:00 ps
+
+hello.c
+
+silasnevstad
+
+README.md
+output.txt
+images
+hello.c
+ExternalResources
+a.out

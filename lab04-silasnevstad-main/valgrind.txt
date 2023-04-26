@@ -1,0 +1,40 @@
+21
+42
+==269956== Memcheck, a memory error detector
+==269956== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==269956== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==269956== Command: ./mem-error
+==269956== 
+==269956== Invalid write of size 8
+==269956==    at 0x400674: main (mem-error.c:21)
+==269956==  Address 0x5206f80 is 0 bytes inside a block of size 8 free'd
+==269956==    at 0x4C2B06D: free (vg_replace_malloc.c:540)
+==269956==    by 0x40066F: main (mem-error.c:20)
+==269956==  Block was alloc'd at
+==269956==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
+==269956==    by 0x400633: main (mem-error.c:16)
+==269956== 
+==269956== Invalid read of size 2
+==269956==    at 0x40067F: main (mem-error.c:22)
+==269956==  Address 0x5206f80 is 0 bytes inside a block of size 8 free'd
+==269956==    at 0x4C2B06D: free (vg_replace_malloc.c:540)
+==269956==    by 0x40066F: main (mem-error.c:20)
+==269956==  Block was alloc'd at
+==269956==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
+==269956==    by 0x400633: main (mem-error.c:16)
+==269956== 
+==269956== 
+==269956== HEAP SUMMARY:
+==269956==     in use at exit: 200 bytes in 50 blocks
+==269956==   total heap usage: 101 allocs, 51 frees, 408 bytes allocated
+==269956== 
+==269956== LEAK SUMMARY:
+==269956==    definitely lost: 200 bytes in 50 blocks
+==269956==    indirectly lost: 0 bytes in 0 blocks
+==269956==      possibly lost: 0 bytes in 0 blocks
+==269956==    still reachable: 0 bytes in 0 blocks
+==269956==         suppressed: 0 bytes in 0 blocks
+==269956== Rerun with --leak-check=full to see details of leaked memory
+==269956== 
+==269956== For lists of detected and suppressed errors, rerun with: -s
+==269956== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
