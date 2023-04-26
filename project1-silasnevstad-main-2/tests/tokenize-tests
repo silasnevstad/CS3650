@@ -1,0 +1,60 @@
+#!/bin/bash
+
+dir=`dirname "$0"`
+. $dir/bash_spec
+
+function test_simple_token() {
+  it "Recognizes a simple non-special token"
+  expect "`echo a | ./tokenize`" to_be 'a'
+}
+
+function test_two_tokens() {
+  it "Recognizes a two non-special tokens"
+  expect "`echo 'a b' | ./tokenize`" to_be \
+"a
+b"
+}
+
+function test_three_tokens() {
+  it "Recognizes three non-special multi-char tokens"
+  expect "`echo 'foo_bar baz      hello' | ./tokenize`" to_be \
+"foo_bar
+baz
+hello"
+}
+
+function test_specials() {
+  it "Recognizes special characters as tokens"
+  expect "`echo '(;|)<>' | ./tokenize`" to_be \
+"(
+;
+|
+)
+<
+>"
+}
+
+function test_string1() {
+  it "Recognizes a string"
+  expect "`echo '"hello world"' | ./tokenize`" to_be \
+"hello world"
+}
+
+function test_string2() {
+  it "Recognizes strings mixed with other tokens"
+  expect "`echo 'foo "Lorem ipsum dolor sit amet" < bar "consectetur (adipiscing; >elit"' | ./tokenize`" to_be \
+"foo
+Lorem ipsum dolor sit amet
+<
+bar
+consectetur (adipiscing; >elit"
+}
+
+print_header tokenize
+test_simple_token
+test_two_tokens
+test_three_tokens
+test_specials
+test_string1
+test_string2
+print_trailer

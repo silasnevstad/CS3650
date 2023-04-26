@@ -1,0 +1,115 @@
+#!/bin/bash
+
+dir=`dirname "$0"`
+. $dir/bash_spec
+
+function test_start() {
+  exec 3< <(./shell < /dev/null)
+  pid=$!
+  local line1
+  local line2
+  read <&3 line1
+  read <&3 line2
+  kill -s SIGKILL $pid &> /dev/null
+  it "prints 'Welcome to mini-shell.'"
+  expect "$line1" to_match "Welcome to mini-shell.*"
+  it "prints the 'shell $' prompt"
+  expect "$line2" to_match '^shell \$.*'
+}
+
+function test_exit() {
+  exec 3< <(echo exit | ./shell)
+  pid=$!
+  read <&3 # Skip "Welcome..."
+  local line
+  read <&3 line
+  kill -s SIGKILL $pid &> /dev/null
+  it "prints 'Bye bye.' on exit"
+  expect "$line" to_match '.*Bye bye.'
+}
+
+
+function test_echo1() {
+  input='echo one'
+  echo -n "$input" > tests/echo1.sh
+  result="`echo -n "$input" | ./shell | sed '/Welcome.*/d;/shell \$.*/d;/Bye bye./d'`"
+  it "runs 1 command"
+  expect "$result" to_match 'one'
+}
+
+function test_echo2() {
+  input='echo one
+echo two'
+  echo -n "$input" > tests/echo2.sh
+  result="`echo -n "$input" | ./shell | sed '/Welcome.*/d;/shell \$.*/d;/Bye bye./d'`"
+  it "runs command 1/2"
+  expect "$result" to_match 'one'
+  it "runs command 2/2"
+  expect "$result" to_match 'two'
+}
+
+function test_ls() {
+  input='ls -a'
+  echo "$input" > tests/ls.sh
+  result="`echo "$input" | ./shell | sed '/Welcome.*/d; /shell \$.*/d; /Bye bye/d'`"
+  exp=`ls -a`
+  it "runs ls -a"
+  expect "$result" to_be "$exp"
+}
+
+function test_file_ops() {
+  rm -rf tmp/
+  input='mkdir -p tmp
+touch tmp/some_file
+ls -1 tmp/
+'
+  echo "$input" > tests/file_ops.sh
+  result="`echo "$input" | ./shell | sed '/Welcome.*/d; /shell \$.*/d; /Bye bye/d'`"
+  it "performs multiple file commands"
+  expect "$result" to_be "some_file"
+}
+
+function test_file_ops_nonl() {
+  rm -rf tmp/
+  input='mkdir -p tmp
+touch tmp/some_file
+ls -1 tmp/
+'
+  echo -n "$input" > tests/file_ops_nonl.sh
+  result="`echo -n "$input" | ./shell | sed '/Welcome.*/d; /shell \$.*/d; /Bye bye/d'`"
+  it "performs multiple file commands without a newline at the end"
+  expect "$result" to_be "some_file"
+}
+
+function test_string_argument() {
+  rm -f "this is a file"
+  input='touch "this is a file"
+ls "this is a file"'
+  echo "$input" > tests/string_argument.sh
+  result="`echo "$input" | ./shell | sed '/Welcome.*/d; /shell \$.*/d; /Bye bye/d'`"
+  it "works with string tokens"
+  expect "$result" to_be "this is a file"
+}
+
+function test_seq() {
+  rm -rf tmp/
+  input='echo one; echo two; echo three'
+  echo -n "$input" > tests/seq.sh
+  result="`echo -n "$input" | ./shell | sed '/Welcome.*/d; /shell \$.*/d; /Bye bye/d'`"
+  it "does sequencing"
+  expect "$result" to_be "one
+two
+three"
+}
+
+print_header shell
+test_start
+test_exit
+test_echo1
+test_echo2
+test_ls
+test_file_ops
+test_file_ops_nonl
+test_string_argument
+test_seq
+print_trailer
